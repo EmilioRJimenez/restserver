@@ -1,6 +1,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const config = require('./config/config');
+const mongoose = require('mongoose');
+
+//Connection to DB
+mongoose.connect(process.env.URLDB, {
+    useNewUrlParser: true, 
+    useUnifiedTopology: true,
+    useCreateIndex: true
+})
+.then(res => console.log('[DB: Connected]'))
+.catch(err => console.log('[DB: Error]'));
 
 //Settings
 const app = express();
@@ -11,9 +21,11 @@ app.use(bodyParser.json());
 
 
 //Routes
-app.get('/usuarios', (req, res) => {
-    res.json('Usuarios');
+app.get('/', (req, res) => {
+    res.json('Index');
 })
+
+app.use('/usuario', require('./routes/usuario'));
 
 //Initialize the server
 app.listen(process.env.PORT, () => {
