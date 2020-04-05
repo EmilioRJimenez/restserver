@@ -1,7 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const config = require('./config/config');
 const mongoose = require('mongoose');
+
+//Settings
+const app = express();
+require('./config/config');
 
 //Connection to DB
 mongoose.connect(process.env.URLDB, {
@@ -11,9 +14,6 @@ mongoose.connect(process.env.URLDB, {
 })
 .then(res => console.log('[DB: Connected]'))
 .catch(err => console.log('[DB: Error]'));
-
-//Settings
-const app = express();
 
 //Middlewares
 app.use(bodyParser.urlencoded({extended: false}));
@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
     res.json('Index');
 })
 
-app.use('/usuario', require('./routes/usuario'));
+app.use('/', require('./routes/index'));
 
 //Initialize the server
 app.listen(process.env.PORT, () => {

@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const {verifyToken, verifyRole} = require('../middlewares/middlewares');
 const _ = require('underscore');
 
 const Usuario = require('../models/usuario');
 
 
-router.get('/', (req, res) => {
+router.get('/', verifyToken, (req, res) => {
 
     let desde = req.query.desde || 0;
     desde = Number(desde);
@@ -14,7 +15,7 @@ router.get('/', (req, res) => {
     let limite = req.query.limite || 5;
     limite = Number(limite);
 
-    Usuario.find({ estado: true }, 'nombre email estado')
+    Usuario.find({ estado: true }, 'nombre email estado role')
     .skip(desde)
     .limit(limite)
     .exec((err, usuarios) => {
@@ -37,8 +38,8 @@ router.get('/', (req, res) => {
     });
 });
 
-router.post('/', (req, res) => {
-    
+router.post('/', [verifyToken, verifyRole], (req, res) => {
+
     let body = req.body;
 
     let usuario = new Usuario({
@@ -57,7 +58,9 @@ router.post('/', (req, res) => {
     });
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', [verifyToken, verifyRole], (req, res) => {
+
+
     let id = req.params.id;
     let body = _.pick(req.body, ['nombre','img', 'role', 'estado']);
 
@@ -77,7 +80,9 @@ router.put('/:id', (req, res) => {
     
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', [verifyToken, verifyRole], (req, res) => {
+
+
     let id  = req.params.id;
 
     let estado = req.body.estado || false;
